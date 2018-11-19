@@ -42,46 +42,28 @@ var titleIDs = [
   '0172495'
 ];
 
-var moviesList = [];
+var moviesArray = [];
 
-function loadDoc() {
-  for (let index = 0; index < titleIDs.length; index++) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open(
-      'GET',
-      `http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`,
-      true
-    );
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        var doc = JSON.parse(this.responseText);
-        var movie = new movieModel(doc.Title, doc.Year, doc.Plot, doc.Poster);
+async function fetchDemo(titleIDs,index) {
+  return fetch(`http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      return json;
+    });
+}
+
+for (let index = 0; index < titleIDs.length; index++) {
+  fetchDemo(titleIDs,index).then(function(doc) {
+    var movie = new movieModel(doc.Title, doc.Year, doc.Plot, doc.Poster);
+        moviesArray.push(movie);
         createCard(movie);
-      }
-    };
+  });
 
-    xhttp.send();
-  }
 }
 
-async function getDoc() {
-  for (let index = 0; index < titleIDs.length; index++) {
-    await fetch(
-      `http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`,
-      {
-        method: 'GET',
-        headers: {
-          accept: 'application/json'
-        }
-      }
-    )
-      .then(response => {
-        response.json();
-      })
-      .then(data => console.log(data))
-      .catch(error => console.log('Error: ' + error));
-  }
-}
+var moviesList = document.getElementById('movies-list');
 
 function createCard(movieData) {
   var div = document.createElement('DIV');
@@ -103,6 +85,91 @@ function createCard(movieData) {
     </div>
   </div>`;
   div.innerHTML = movieCard;
-  var moviesList = document.getElementById('movies-list');
   moviesList.append(div);
 }
+
+
+
+document.getElementById("search-in").addEventListener("input",findMovies);
+
+function findMovies(){
+  var inputVal = document.getElementById("search-in").value;
+  console.log(inputVal);
+  moviesList.innerHTML = "";
+  for(let index=0;index<titleIDs.length;index++){
+    var regex = new RegExp(inputVal,'i');
+    if(moviesArray[index].title.match(regex)) createCard(moviesArray[index]);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function loadDoc() {
+  for (let index = 0; index < titleIDs.length; index++) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open(
+      'GET',
+      `http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`,
+      true
+    );
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var doc = JSON.parse(this.responseText);
+        var movie = new movieModel(doc.Title, doc.Year, doc.Plot, doc.Poster);
+        createCard(movie);
+      }
+    };
+    xhttp.onerror = function(){
+      console.log("An error occured...");
+    }
+    xhttp.send();
+  }
+}
+
+
+
+async function getDoc() {
+  for (let index = 0; index < titleIDs.length; index++) {
+    await fetch(
+      `http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`,
+      {
+        method: 'GET',
+        headers: {
+          accept: 'application/json'
+        }
+      }
+    )
+      .then(response => {
+        response.json();
+      })
+      .then(data => console.log(data))
+      .catch(error => console.log('Error: ' + error));
+  }
+}
+
