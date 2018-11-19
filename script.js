@@ -20,7 +20,7 @@ var titleIDs = [
   '0109830',
   '0080684',
   '1375666',
-  '0167261',
+  '0209144',
   '0073486',
   '0099685',
   '0133093',
@@ -88,14 +88,19 @@ function createCard(movieData) {
   moviesList.append(div);
 }
 
-
-
-document.getElementById("search-in").addEventListener("input",findMovies);
+document.getElementById("search").addEventListener("click", function(event){
+  event.preventDefault();
+});
+var userSearches = new Array();
+localStorage.setItem("user-previous-searches",null);
+document.getElementById("search").addEventListener("click",findMovies);
 
 function findMovies(){
-  var inputVal = document.getElementById("search-in").value;
+  var inputVal = document.getElementById("search-val").value;
+  userSearches.push(inputVal);
+  localStorage.setItem("user-previous-searches",JSON.stringify(userSearches));
   console.log(inputVal);
-  moviesList.innerHTML = "";
+  moviesList.innerHTML = "<div class='container'>Found nothing...</div>";
   for(let index=0;index<titleIDs.length;index++){
     var regex = new RegExp(inputVal,'i');
     if(moviesArray[index].title.match(regex)) createCard(moviesArray[index]);
@@ -103,8 +108,21 @@ function findMovies(){
 }
 
 
+document.getElementById("search-val").addEventListener("focus",getSearchList);
+document.getElementById("search-val").addEventListener("blur",removeSeachList);
 
+function getSearchList(){
+  var userSearches = JSON.parse(localStorage.getItem("user-previous-searches"));
+  var dropdown = document.getElementsByClassName("dropdown-menu")[0];
+  for(let i=0;i<userSearches.length;i++){
 
+  }
+  dropdown.classList.add("show");
+}
+
+function removeSeachList(){
+  document.getElementsByClassName("dropdown-menu")[0].classList.remove("show");
+}
 
 
 

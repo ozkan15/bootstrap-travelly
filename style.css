@@ -9,6 +9,10 @@
   font-size: 25px;
   color: white;
 }
+
+.input{
+  height: 42px;
+}
 #main-section {
   background-color: lightgray;
 }
@@ -60,5 +64,12 @@ button:active {
 
 .with-margin{
   margin-bottom: 30px;
+}
+.show{
+  display:block;
+
+}
+.hide{
+  display:none;
 }
 
