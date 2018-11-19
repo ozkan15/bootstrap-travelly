@@ -45,7 +45,7 @@ var titleIDs = [
 var moviesArray = [];
 
 async function fetchDemo(titleIDs,index) {
-  return fetch(`http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
+  return fetch(`https://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
     .then(function(response) {
       return response.json();
     })
