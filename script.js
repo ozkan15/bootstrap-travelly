@@ -44,13 +44,10 @@ var titleIDs = [
 
 var moviesArray = [];
 
-<<<<<<< HEAD
-async function fetchDemo(titleIDs,index) {
-  return fetch(`https://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
-=======
+
 async function fetchDemo(titleIDs, index) {
   return fetch(`http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
->>>>>>> master
+
     .then(function(response) {
       return response.json();
     })
