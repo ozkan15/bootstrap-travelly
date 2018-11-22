@@ -44,8 +44,8 @@ var titleIDs = [
 
 var moviesArray = [];
 
-async function fetchDemo(titleIDs,index) {
-  return fetch(`https://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
+async function fetchDemo(titleIDs, index) {
+  return fetch(`http://www.omdbapi.com/?i=tt${titleIDs[index]}&apikey=c500a780`)
     .then(function(response) {
       return response.json();
     })
@@ -55,12 +55,11 @@ async function fetchDemo(titleIDs,index) {
 }
 
 for (let index = 0; index < titleIDs.length; index++) {
-  fetchDemo(titleIDs,index).then(function(doc) {
+  fetchDemo(titleIDs, index).then(function(doc) {
     var movie = new movieModel(doc.Title, doc.Year, doc.Plot, doc.Poster);
-        moviesArray.push(movie);
-        createCard(movie);
+    moviesArray.push(movie);
+    createCard(movie);
   });
-
 }
 
 var moviesList = document.getElementById('movies-list');
@@ -74,7 +73,7 @@ function createCard(movieData) {
   <div class="card" style="height:100%;">
     <img class="card-img-top" src=${movieData.poster} alt="Card image cap" />
     <div class="card-body">
-      <a href="https://www.google.com.tr/search?q=${
+      <a target="_blank" href="https://www.google.com.tr/search?q=${
         movieData.title
       }"><h5 class="card-title">${movieData.title +
     ' - ' +
@@ -88,41 +87,77 @@ function createCard(movieData) {
   moviesList.append(div);
 }
 
-document.getElementById("search").addEventListener("click", function(event){
+document.getElementById('search').addEventListener('click', function(event) {
   event.preventDefault();
 });
 var userSearches = new Array();
-localStorage.setItem("user-previous-searches",null);
-document.getElementById("search").addEventListener("click",findMovies);
+localStorage.setItem('user-previous-searches', null);
+document.getElementById('search').addEventListener('click', findMovies);
 
-function findMovies(){
-  var inputVal = document.getElementById("search-val").value;
-  userSearches.push(inputVal);
-  localStorage.setItem("user-previous-searches",JSON.stringify(userSearches));
-  console.log(inputVal);
+function findMovies() {
+  var inputVal = document.getElementById('search-val').value;
+  if (inputVal) {
+    userSearches.push(inputVal);
+    localStorage.setItem(
+      'user-previous-searches',
+      JSON.stringify(userSearches)
+    );
+  }
   moviesList.innerHTML = "<div class='container'>Found nothing...</div>";
-  for(let index=0;index<titleIDs.length;index++){
-    var regex = new RegExp(inputVal,'i');
-    if(moviesArray[index].title.match(regex)) createCard(moviesArray[index]);
+  for (let index = 0; index < titleIDs.length; index++) {
+    var regex = new RegExp(inputVal, 'i');
+    if (moviesArray[index].title.match(regex)) createCard(moviesArray[index]);
   }
 }
 
 
-document.getElementById("search-val").addEventListener("focus",getSearchList);
-document.getElementById("search-val").addEventListener("blur",removeSeachList);
 
-function getSearchList(){
-  var userSearches = JSON.parse(localStorage.getItem("user-previous-searches"));
-  var dropdown = document.getElementsByClassName("dropdown-menu")[0];
-  for(let i=0;i<userSearches.length;i++){
 
+
+document.getElementById('search-val').addEventListener('focus', getSearchList);
+document.getElementsByTagName('body')[0].addEventListener('click',removeSearchList)
+
+function getSearchList() {
+  var userSearches = JSON.parse(localStorage.getItem('user-previous-searches'));
+  var dropdown = document.getElementsByClassName('dropdown-menu')[0];
+  dropdown.innerHTML = '';
+  if (userSearches != null) {
+    for (let i = 0; i < userSearches.length; i++) {
+      var ul = document.createElement('A');
+      ul.classList.add('dropdown-item');
+      ul.innerHTML = userSearches[i];
+      dropdown.append(ul);
+    }
+    dropdown.classList.add('show');
   }
-  dropdown.classList.add("show");
 }
 
-function removeSeachList(){
-  document.getElementsByClassName("dropdown-menu")[0].classList.remove("show");
+function removeSearchList(event) {
+  if(!document.getElementsByClassName("dropdown")[0].contains(event.target)){
+    document.getElementsByClassName('dropdown-menu')[0].classList.remove("show");
+  }
+
 }
+
+
+
+document
+  .getElementsByClassName('dropdown-menu')[0]
+  .addEventListener('click', selectPreviousSearch);
+
+function selectPreviousSearch(event) {
+  document.getElementById("search-val").value = event.target.innerText;
+  document.getElementsByClassName('dropdown-menu')[0].classList.remove("show");
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -163,14 +198,12 @@ function loadDoc() {
         createCard(movie);
       }
     };
-    xhttp.onerror = function(){
-      console.log("An error occured...");
-    }
+    xhttp.onerror = function() {
+      console.log('An error occured...');
+    };
     xhttp.send();
   }
 }
-
-
 
 async function getDoc() {
   for (let index = 0; index < titleIDs.length; index++) {
@@ -190,4 +223,3 @@ async function getDoc() {
       .catch(error => console.log('Error: ' + error));
   }
 }
-
